@@ -3,8 +3,8 @@
 module RedisStream
   class Subscriber
     def self.listen(group: nil, consumer: nil, streams:, &block)
-      group = group || RedisStream.config.group
-      consumer = consumer || RedisStream.config.consumer
+      group = group || RedisStream.config.group_id
+      consumer = consumer || RedisStream.config.consumer_id
       streams = Array(streams)
 
       return unless streams.any?

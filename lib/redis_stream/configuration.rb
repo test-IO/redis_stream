@@ -24,8 +24,8 @@ module RedisStream
       @consumer_id = consumer_id
     end
 
-    def stream_key(stream_key)
-      @stream_key = stream_key
+    def stream(stream)
+      @stream_key = stream
     end
   end
 end
