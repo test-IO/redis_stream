@@ -2,9 +2,9 @@
 
 module RedisStream
   class Subscriber
-    def self.listen(group: nil, consumer: nil, streams:, &block)
-      group = group || RedisStream.config.group_id
-      consumer = consumer || RedisStream.config.consumer_id
+    def self.listen(streams:, group: nil, consumer: nil, &block)
+      group ||= RedisStream.config.group_id
+      consumer ||= RedisStream.config.consumer_id
       streams = Array(streams)
 
       return unless streams.any?
@@ -24,11 +24,9 @@ module RedisStream
     end
 
     def self.create_group(stream_key, group_name)
-      begin
-        RedisStream.client.xgroup(:create, stream_key, group_name, '$', mkstream: true)
-      rescue Redis::CommandError => e
-        raise e unless e.message.include?('BUSYGROUP') # the group already existing is fine
-      end
+      RedisStream.client.xgroup(:create, stream_key, group_name, "$", mkstream: true)
+    rescue Redis::CommandError => e
+      raise e unless e.message.include?("BUSYGROUP") # the group already existing is fine
     end
   end
 end

@@ -5,7 +5,19 @@ RSpec.describe RedisStream do
     expect(RedisStream::VERSION).not_to be nil
   end
 
-  it "does something useful" do
-    expect(false).to eq(true)
+  describe ".configure" do
+    it "yields the configuration" do
+      RedisStream.configure do |config|
+        expect(config).to be_instance_of(RedisStream::Configuration)
+      end
+    end
+
+    it "allow setting the client" do
+      RedisStream.configure do |config|
+        config.redis(DummyRedisClient.new)
+      end
+
+      expect(RedisStream.client).to be_instance_of(DummyRedisClient)
+    end
   end
 end
