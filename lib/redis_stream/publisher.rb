@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "json"
 
 module RedisStream
   class Publisher
@@ -7,7 +8,8 @@ module RedisStream
     end
 
     def publish(name, data = {})
-      data = { "name" => name, "json" => data.to_json }
+      puts "Publishing #{name} to #{data}"
+      data = { "name" => name, "json" => JSON.generate(data) }
       RedisStream.client.xadd(@stream_key, data)
     end
   end
