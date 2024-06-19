@@ -19,6 +19,5 @@ RSpec.describe RedisStream do
 
       expect(RedisStream.client).to be_instance_of(DummyRedisClient)
     end
-
   end
 end

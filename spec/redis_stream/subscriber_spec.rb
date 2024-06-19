@@ -1,7 +1,6 @@
 RSpec.describe RedisStream::Subscriber do
   let(:stream_key) { "test" }
 
-
   before do
     RedisStream.configure do |config|
       config.redis(DummyRedisClient.new)

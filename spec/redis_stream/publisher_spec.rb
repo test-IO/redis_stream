@@ -10,7 +10,7 @@ RSpec.describe RedisStream::Publisher do
 
   describe "#publish" do
     it "publishes the message to the stream" do
-      publisher.publish("test", { name: "test" })
+      publisher.publish("test", {name: "test"})
     end
   end
 end
