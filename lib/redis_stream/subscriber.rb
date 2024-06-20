@@ -14,7 +14,8 @@ module RedisStream
       end
 
       # listen for up to 10 messages forever
-      messages = RedisStream.client.xreadgroup(group, consumer, streams, ">", count: 1, block: 0)
+      ids = streams.map { [">"] }
+      messages = RedisStream.client.xreadgroup(group, consumer, streams, ids, count: 1, block: 0)
 
       messages.each do |stream, stream_messages|
         stream_messages.each do |message_id, message_hash|
