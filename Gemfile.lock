@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    redis_stream (0.1.1)
+    redis_stream (0.1.2)
 
 GEM
   remote: https://rubygems.org/
@@ -56,7 +56,7 @@ GEM
       rubocop (>= 1.48.1, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
     ruby-progressbar (1.13.0)
-    standard (1.37.0)
+    standard (1.39.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
       rubocop (~> 1.64.0)
@@ -72,8 +72,8 @@ GEM
     unicode-display_width (2.5.0)
 
 PLATFORMS
+  arm64-darwin-23
   ruby
-  x86_64-darwin-22
 
 DEPENDENCIES
   rake (~> 13.0)
