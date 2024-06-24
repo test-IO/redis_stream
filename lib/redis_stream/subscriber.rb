@@ -14,7 +14,7 @@ module RedisStream
       end
 
       # listen for up to 10 messages forever
-      ids = Array.new(streams.length, '>')
+      ids = Array.new(streams.length, ">")
       messages = RedisStream.client.xreadgroup(group, consumer, streams, ids, count: 1, block: 0)
 
       messages.each do |stream, stream_messages|
