@@ -1,11 +1,12 @@
 module RedisStream
   class Configuration
-    attr_accessor :client, :group_id, :consumer_id, :stream_key
+    attr_accessor :client, :group_id, :consumer_id, :stream_key, :logging_stream_key
 
     def initialize
       @group = "group"
       @consumer = "consumer"
       @stream_key = "stream"
+      @logging_stream_key = "logging_stream"
     end
 
     def redis(client)
@@ -26,6 +27,10 @@ module RedisStream
 
     def stream(stream)
       @stream_key = stream
+    end
+
+    def logging_stream(logging_stream)
+      @logging_stream_key = logging_stream
     end
   end
 end
