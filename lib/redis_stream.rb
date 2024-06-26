@@ -27,4 +27,8 @@ module RedisStream
   def self.default_publisher
     @default_publisher ||= Publisher.new(config.stream_key)
   end
+
+  def self.default_logger
+    @default_logger ||= Publisher.new(config.logging_stream_key)
+  end
 end

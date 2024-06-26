@@ -20,4 +20,14 @@ RSpec.describe RedisStream do
       expect(RedisStream.client).to be_instance_of(DummyRedisClient)
     end
   end
+
+  describe ".default_logger" do
+    it "returns a Publisher instance" do
+      expect(RedisStream.default_logger).to be_instance_of(RedisStream::Publisher)
+    end
+
+    it "uses the logging stream key" do
+      expect(RedisStream.default_logger.instance_variable_get(:@stream_key)).to eq("logging_stream")
+    end
+  end
 end
