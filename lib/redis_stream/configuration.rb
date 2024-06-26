@@ -28,5 +28,9 @@ module RedisStream
     def stream(stream)
       @stream_key = stream
     end
+
+    def logging_stream(logging_stream)
+      @logging_stream_key = logging_stream
+    end
   end
 end
