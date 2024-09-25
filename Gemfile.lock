@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    redis_stream (0.1.4)
+    redis_stream (0.1.5)
 
 GEM
   remote: https://rubygems.org/
