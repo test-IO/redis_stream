@@ -10,7 +10,7 @@ module RedisStream
 
     def publish(name, data = {})
       data = {"name" => name, "json" => JSON.generate(data)}
-      RedisStream.client.xadd(@stream_key, data)
+      RedisStream.client.xadd(@stream_key, data, maxlen: 1000, approximate: true)
     end
   end
 end
