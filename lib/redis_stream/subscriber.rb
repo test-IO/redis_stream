@@ -13,13 +13,15 @@ module RedisStream
         create_group(stream_key, group)
       end
 
-      # listen for up to 10 messages forever
-      ids = Array.new(streams.length, ">")
-      messages = RedisStream.client.xreadgroup(group, consumer, streams, ids, count: 1, block: 0, noack: true)
+      loop do
+        # listen for up to 10 messages forever
+        ids = Array.new(streams.length, ">")
+        messages = RedisStream.client.xreadgroup(group, consumer, streams, ids, count: 1, block: 0, noack: true)
 
-      messages.each do |stream, stream_messages|
-        stream_messages.each do |message_id, message_hash|
-          yield(stream, message_id, message_hash["name"], JSON.parse(message_hash["json"]))
+        messages.each do |stream, stream_messages|
+          stream_messages.each do |message_id, message_hash|
+            yield(stream, message_id, message_hash["name"], JSON.parse(message_hash["json"]))
+          end
         end
       end
     end
