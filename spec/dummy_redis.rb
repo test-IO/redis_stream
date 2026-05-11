@@ -20,4 +20,8 @@ class DummyRedisClient
 
   def xack(stream, group, message_id)
   end
+
+  def ping
+    "PONG"
+  end
 end
