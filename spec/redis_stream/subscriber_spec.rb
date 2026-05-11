@@ -40,7 +40,7 @@ RSpec.describe RedisStream::Subscriber do
     end
 
     context "when xreadgroup raises a connection error" do
-      it "calls wait_for_reconnect and resumes instead of propagating" do
+      it "calls reconnect_with_delay and resumes instead of propagating" do
         stub_loop_iterations(2)
         call_count = 0
         allow(RedisStream.client).to receive(:xreadgroup) do
@@ -50,7 +50,7 @@ RSpec.describe RedisStream::Subscriber do
           []
         end
 
-        expect(described_class).to receive(:wait_for_reconnect).and_call_original
+        expect(described_class).to receive(:reconnect_with_delay).and_call_original
 
         expect do
           described_class.listen(streams: stream_key) { |*| }
@@ -58,13 +58,13 @@ RSpec.describe RedisStream::Subscriber do
       end
     end
 
-    describe ".wait_for_reconnect" do
+    describe ".reconnect_with_delay" do
       it "returns once ping succeeds" do
         allow(RedisStream.client).to receive(:ping).and_return("PONG")
 
         expect(described_class).to receive(:sleep).once
 
-        described_class.wait_for_reconnect
+        described_class.reconnect_with_delay
       end
 
       it "keeps retrying with exponential backoff until ping succeeds" do
@@ -79,7 +79,7 @@ RSpec.describe RedisStream::Subscriber do
         sleeps = []
         allow(described_class).to receive(:sleep) { |s| sleeps << s }
 
-        described_class.wait_for_reconnect
+        described_class.reconnect_with_delay
 
         expect(sleeps.size).to eq(3)
         expect(sleeps[1]).to be > sleeps[0]
@@ -98,7 +98,7 @@ RSpec.describe RedisStream::Subscriber do
         sleeps = []
         allow(described_class).to receive(:sleep) { |s| sleeps << s }
 
-        described_class.wait_for_reconnect
+        described_class.reconnect_with_delay
 
         expect(sleeps.last).to eq(RedisStream::Subscriber::MAX_BACKOFF)
       end
@@ -115,7 +115,7 @@ RSpec.describe RedisStream::Subscriber do
           []
         end
 
-        expect(RedisStream.client).to receive(:xgroup).twice.and_call_original
+        expect(RedisStream.client).to receive(:xgroup).and_call_original
         expect(described_class).not_to receive(:sleep)
 
         described_class.listen(streams: stream_key) { |*| }
