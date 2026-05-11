@@ -86,7 +86,7 @@ RSpec.describe RedisStream::Subscriber do
         expect(sleeps[2]).to be > sleeps[1]
       end
 
-      it "caps backoff at MAX_BACKOFF" do
+      it "caps backoff at MAX_RECONNECT_BACKOFF" do
         ping_calls = 0
         allow(RedisStream.client).to receive(:ping) do
           ping_calls += 1
@@ -100,7 +100,7 @@ RSpec.describe RedisStream::Subscriber do
 
         described_class.reconnect_with_delay
 
-        expect(sleeps.last).to eq(RedisStream::Subscriber::MAX_BACKOFF)
+        expect(sleeps.last).to eq(RedisStream::Subscriber::MAX_RECONNECT_BACKOFF)
       end
     end
 

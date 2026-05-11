@@ -2,8 +2,8 @@
 
 module RedisStream
   class Subscriber
-    INITIAL_BACKOFF = 0.5
-    MAX_BACKOFF = 30.0
+    INITIAL_RECONNECT_BACKOFF = 0.5
+    MAX_RECONNECT_BACKOFF = 30.0
 
     class << self
       def listen(streams:, group: RedisStream.config.group_id, consumer: RedisStream.config.consumer_id)
@@ -36,8 +36,8 @@ module RedisStream
 
       def reconnect_with_delay
         started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        backoff    = INITIAL_BACKOFFi                                # standard:disable Layout/ExtraSpacing
-        attempt    = 0                                               # standard:disable Layout/ExtraSpacing
+        backoff    = INITIAL_RECONNECT_BACKOFF                                # standard:disable Layout/ExtraSpacing
+        attempt    = 0                                                        # standard:disable Layout/ExtraSpacing
 
         loop do
           attempt += 1
@@ -56,7 +56,7 @@ module RedisStream
           rescue Redis::BaseConnectionError => e
             log("Reconnect attempt ##{attempt} failed: #{e.class}: #{e.message}")
 
-            backoff = [backoff * 2, MAX_BACKOFF].min
+            backoff = [backoff * 2, MAX_RECONNECT_BACKOFF].min
           end
         end
       end
