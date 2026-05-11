@@ -36,8 +36,8 @@ module RedisStream
 
       def reconnect_with_delay
         started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        backoff    = INITIAL_BACKOFF
-        attempt    = 0
+        backoff    = INITIAL_BACKOFFi                                # standard:disable Layout/ExtraSpacing
+        attempt    = 0                                               # standard:disable Layout/ExtraSpacing
 
         loop do
           attempt += 1
