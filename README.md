@@ -5,6 +5,7 @@ Welcome to your new gem! In this directory, you'll find the files you need to be
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
+
 ```ruby
   # Gemfile
   $ gem "redis_stream", git: "https://github.com/test-IO/redis_stream"
@@ -12,17 +13,23 @@ Install the gem and add to the application's Gemfile by executing:
 
 ## Usage
 
-Initialize the gem with the Redis client you want to use in you `config/initializers/
+Initialize the gem with the Redis client you want to use in you `config/initializers/`
 
 ```ruby
 RedisStream.configure do |config|
-  config.redis(Redis.new(url: "redis://localhost:6379/0"))
+  config.redis_url("redis://localhost:6379/0")
   config.group("group_name")
   config.consumer("consumer_name")
   config.stream("stream_name")
+  config.logging_stream("logging_stream_name")
+  config.maxlen(200) # optional, defaults to 100
 end
 ```
+
+`maxlen` is optional and caps the stream length when publishing (passed to Redis `XADD` with the approximate flag). If omitted, the default of 100 is used.
+
 ### Subscribe
+
 To subscribe you will always need to provide the name of the stream you want to listen to, you can also provide an array of stream.
 
 ```ruby
