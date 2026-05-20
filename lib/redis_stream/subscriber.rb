@@ -28,9 +28,15 @@ module RedisStream
 
           reconnect_with_delay
         rescue Redis::CommandError => e
-          raise unless e.message.include?("NOGROUP")
+          if loading_error?(e)
+            log("Redis is loading dataset (#{e.message})")
 
-          ensure_groups_in_place!(streams, group)
+            reconnect_with_delay
+          elsif nogroup_error?(e)
+            ensure_groups_in_place!(streams, group)
+          else
+            raise
+          end
         end
       end
 
@@ -55,6 +61,12 @@ module RedisStream
             return
           rescue Redis::BaseConnectionError => e
             log("Reconnect attempt ##{attempt} failed: #{e.class}: #{e.message}")
+
+            backoff = [backoff * 2, MAX_RECONNECT_BACKOFF].min
+          rescue Redis::CommandError => e
+            raise unless loading_error?(e)
+
+            log("Reconnect attempt ##{attempt}: Redis still loading dataset (#{e.message})")
 
             backoff = [backoff * 2, MAX_RECONNECT_BACKOFF].min
           end
@@ -85,6 +97,14 @@ module RedisStream
 
       def log(message)
         warn("[redis_stream] #{message}")
+      end
+
+      def loading_error?(error)
+        error.message.start_with?("LOADING")
+      end
+
+      def nogroup_error?(error)
+        error.message.include?("NOGROUP")
       end
     end
   end
