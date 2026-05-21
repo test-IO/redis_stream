@@ -104,6 +104,55 @@ RSpec.describe RedisStream::Subscriber do
       end
     end
 
+    context "when xreadgroup raises LOADING" do
+      it "calls reconnect_with_delay and resumes instead of propagating" do
+        stub_loop_iterations(2)
+        call_count = 0
+        allow(RedisStream.client).to receive(:xreadgroup) do
+          call_count += 1
+          raise Redis::CommandError, "LOADING Dragonfly is loading the dataset in memory" if call_count == 1
+
+          []
+        end
+
+        expect(described_class).to receive(:reconnect_with_delay).and_call_original
+        allow(RedisStream.client).to receive(:ping).and_return("PONG")
+
+        expect do
+          described_class.listen(streams: stream_key) { |*| }
+        end.not_to raise_error
+      end
+    end
+
+    context "when ping raises LOADING during reconnect" do
+      it "keeps retrying with exponential backoff until ping succeeds" do
+        ping_calls = 0
+        allow(RedisStream.client).to receive(:ping) do
+          ping_calls += 1
+          raise Redis::CommandError, "LOADING Dragonfly is loading the dataset in memory" if ping_calls < 3
+
+          "PONG"
+        end
+
+        sleeps = []
+        allow(described_class).to receive(:sleep) { |s| sleeps << s }
+
+        described_class.reconnect_with_delay
+
+        expect(sleeps.size).to eq(3)
+        expect(sleeps[1]).to be > sleeps[0]
+        expect(sleeps[2]).to be > sleeps[1]
+      end
+
+      it "re-raises non-LOADING CommandError from ping" do
+        allow(RedisStream.client).to receive(:ping)
+          .and_raise(Redis::CommandError, "ERR something else")
+
+        expect { described_class.reconnect_with_delay }
+          .to raise_error(Redis::CommandError, /something else/)
+      end
+    end
+
     context "when xreadgroup raises NOGROUP" do
       it "recreates the group and retries without sleeping" do
         stub_loop_iterations(2)
